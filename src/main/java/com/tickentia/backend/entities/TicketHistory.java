@@ -15,7 +15,7 @@ public class TicketHistory {
     private String eventName;
     private String eventTime;
     private String seatNumbers;
-    private Date eventDate;
+    private String eventDate;
     private Date purchasedDate;
     private double discount;
     private double ticketPrice;
@@ -23,7 +23,7 @@ public class TicketHistory {
 
     public TicketHistory(){ }
 
-    public TicketHistory(long customerId, int quantity, String eventName, String eventTime, String seatNumbers, Date eventDate, Date purchasedDate, double discount, double ticketPrice, double totalPrice) {
+    public TicketHistory(long customerId, int quantity, String eventName, String eventTime, String seatNumbers, String eventDate, Date purchasedDate, double discount, double ticketPrice, double totalPrice) {
         this.customerId = customerId;
         this.quantity = quantity;
         this.eventName = eventName;
@@ -76,11 +76,19 @@ public class TicketHistory {
         this.seatNumbers = seatNumbers;
     }
 
-    public Date getEventDate() {
+    public long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(long recordId) {
+        this.recordId = recordId;
+    }
+
+    public String getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Date eventDate) {
+    public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
 

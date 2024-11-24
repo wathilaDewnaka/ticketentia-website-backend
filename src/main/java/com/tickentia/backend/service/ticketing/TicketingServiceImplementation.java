@@ -77,9 +77,10 @@ public class TicketingServiceImplementation implements TicketingService {
             Vendor vendor = new Vendor(ticketPool, newSession);
             Thread vendorThread = new Thread(vendor);
             vendorThread.start();
-
             return true;
+
         }
+
         return false;
     }
 

@@ -21,7 +21,7 @@ public class Sessions {
     private String eventDescription;
     private String eventType;
     private String returnedImage;
-    private Date eventDate;
+    private String eventDate;
     private Date postedDate;
     private double ticketPrice;
     private double vipDiscount;
@@ -36,7 +36,7 @@ public class Sessions {
     
     public Sessions() { }
 
-    public Sessions(String vendorName, long vendorId, String vendorEmail, String eventName, String eventVenue, String eventCategory, String eventTime, String eventDescription, String eventType, Date eventDate, Date postedDate, double ticketPrice, double vipDiscount, int totalTickets, int ticketReleaseRate, int customerRetrievalRate, int maxTicketCapacity, byte[] eventImage) {
+    public Sessions(String vendorName, long vendorId, String vendorEmail, String eventName, String eventVenue, String eventCategory, String eventTime, String eventDescription, String eventType, String eventDate, Date postedDate, double ticketPrice, double vipDiscount, int totalTickets, int ticketReleaseRate, int customerRetrievalRate, int maxTicketCapacity, byte[] eventImage) {
         this.vendorName = vendorName;
         this.vendorId = vendorId;
         this.vendorEmail = vendorEmail;
@@ -130,11 +130,11 @@ public class Sessions {
         this.eventDescription = eventDescription;
     }
 
-    public Date getEventDate() {
+    public String getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Date eventDate) {
+    public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
 

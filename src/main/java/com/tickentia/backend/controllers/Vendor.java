@@ -25,13 +25,18 @@ public class Vendor {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<?> startSession(@ModelAttribute InitializerRequest initializerRequest){
+    public ResponseEntity<String> startSession(@ModelAttribute InitializerRequest initializerRequest) {
         try {
             boolean status = ticketingService.configureSession(initializerRequest);
-        }catch (Exception e){
-            System.out.println(e);
+
+            if (status) {
+                return ResponseEntity.ok("Session created successfully");
+            } else {
+                return ResponseEntity.status(500).body("Failed to create session");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while creating the session");
         }
-        return ResponseEntity.ok().body("Created a session");
     }
 
     @GetMapping("/stop/{id}")

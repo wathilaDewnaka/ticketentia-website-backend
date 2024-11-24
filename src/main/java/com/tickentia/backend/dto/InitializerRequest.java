@@ -14,7 +14,7 @@ public class InitializerRequest {
     private String eventTime;
     private String eventDescription;
     private String eventType;
-    private Date eventDate;
+    private String eventDate;
     private double ticketPrice;
     private double vipDiscount;
     private int totalTickets;
@@ -70,11 +70,11 @@ public class InitializerRequest {
         this.eventDescription = eventDescription;
     }
 
-    public Date getEventDate() {
+    public String getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Date eventDate) {
+    public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
 
