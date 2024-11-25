@@ -3,9 +3,11 @@ package com.tickentia.backend.controllers;
 import com.tickentia.backend.dto.AuthenticationResponse;
 import com.tickentia.backend.dto.LoginRequest;
 import com.tickentia.backend.dto.SignUpRequest;
+import com.tickentia.backend.entities.AdminDetails;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Vendors;
 import com.tickentia.backend.others.JWTService;
+import com.tickentia.backend.respositary.AdminRepository;
 import com.tickentia.backend.respositary.CustomerRepository;
 import com.tickentia.backend.respositary.VendorRepository;
 import com.tickentia.backend.service.auth.AuthorizationService;
@@ -26,13 +28,15 @@ public class Authorization {
     private final AuthenticationManager authenticationManager;
     private final CustomerRepository customerRepository;
     private final VendorRepository vendorRepository;
+    private final AdminRepository adminRepository;
     private final JWTService jwtService;
 
-    public Authorization(AuthorizationService authorizationService, AuthenticationManager authenticationManager, CustomerRepository customerRepository, VendorRepository vendorRepository, JWTService jwtService) {
+    public Authorization(AuthorizationService authorizationService, AuthenticationManager authenticationManager, CustomerRepository customerRepository, VendorRepository vendorRepository, AdminRepository adminRepository, JWTService jwtService) {
         this.authorizationService = authorizationService;
         this.authenticationManager = authenticationManager;
         this.customerRepository = customerRepository;
         this.vendorRepository = vendorRepository;
+        this.adminRepository = adminRepository;
         this.jwtService = jwtService;
     }
 
@@ -71,7 +75,7 @@ public class Authorization {
                 } else {
                     return ResponseEntity.status(404).body("User not found");
                 }
-            } else{
+            } else if (Objects.equals(loginRequest.getUserType(), "VENDOR")) {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("vendor." + loginRequest.getEmail(), loginRequest.getPassword()));
                 Optional<Vendors> vendors = vendorRepository.findByEmail(loginRequest.getEmail());
 
@@ -80,6 +84,19 @@ public class Authorization {
                     String jwtToken = jwtService.generateToken(vendor);
 
                     AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwtToken, vendor.getName(), "VENDOR", vendor.getVendorId());
+                    return ResponseEntity.ok(authenticationResponse);
+                } else {
+                    return ResponseEntity.status(404).body("User not found");
+                }
+            } else {
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("admin." + loginRequest.getEmail(), loginRequest.getPassword()));
+
+                Optional<AdminDetails> adminDetails = adminRepository.findByEmail(loginRequest.getEmail());
+                if (adminDetails.isPresent()){
+                    AdminDetails admin = adminDetails.get();
+                    String jwtToken = jwtService.generateToken(admin);
+
+                    AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwtToken, admin.getName(), "ADMIN", admin.getAdminId());
                     return ResponseEntity.ok(authenticationResponse);
                 } else {
                     return ResponseEntity.status(404).body("User not found");

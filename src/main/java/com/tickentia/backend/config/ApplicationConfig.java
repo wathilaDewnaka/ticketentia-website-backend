@@ -1,7 +1,9 @@
 package com.tickentia.backend.config;
 
+import com.tickentia.backend.entities.AdminDetails;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Vendors;
+import com.tickentia.backend.respositary.AdminRepository;
 import com.tickentia.backend.respositary.CustomerRepository;
 import com.tickentia.backend.respositary.VendorRepository;
 import org.springframework.context.annotation.Bean;
@@ -22,10 +24,12 @@ import java.util.Optional;
 public class ApplicationConfig {
     private final CustomerRepository customerRepository;
     private final VendorRepository vendorRepository;
+    private final AdminRepository adminRepository;
 
-    public ApplicationConfig(CustomerRepository customerRepository, VendorRepository vendorRepository) {
+    public ApplicationConfig(CustomerRepository customerRepository, VendorRepository vendorRepository, AdminRepository adminRepository) {
         this.customerRepository = customerRepository;
         this.vendorRepository = vendorRepository;
+        this.adminRepository = adminRepository;
     }
 
     @Bean
@@ -45,6 +49,11 @@ public class ApplicationConfig {
                     if (customerOptional.isPresent()) {
                         return customerOptional.get(); // Return customer details if found
                     }
+                }
+
+                Optional<AdminDetails> adminDetails = adminRepository.findByEmail(username.substring(6));
+                if (adminDetails.isPresent()){
+                    return adminDetails.get();
                 }
 
                 // If neither user type is found, throw exception

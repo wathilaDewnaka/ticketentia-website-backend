@@ -3,13 +3,17 @@ package com.tickentia.backend.service.auth;
 import com.tickentia.backend.controllers.Vendor;
 import com.tickentia.backend.dto.LoginRequest;
 import com.tickentia.backend.dto.SignUpRequest;
+import com.tickentia.backend.entities.AdminDetails;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Vendors;
+import com.tickentia.backend.respositary.AdminRepository;
 import com.tickentia.backend.respositary.CustomerRepository;
 import com.tickentia.backend.respositary.VendorRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
