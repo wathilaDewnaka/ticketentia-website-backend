@@ -4,6 +4,7 @@ import com.tickentia.backend.dto.TicketPurchaseRequest;
 import com.tickentia.backend.service.customer.CustomerService;
 import com.tickentia.backend.service.ticketing.TicketingService;
 import com.tickentia.backend.service.ticketing.TicketingServiceImplementation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,10 @@ public class Customer {
     @PostMapping("/events/purchase-ticket")
     public ResponseEntity<?> purchaseTicket(@RequestBody TicketPurchaseRequest ticketPurchaseRequest){
         boolean status = ticketingService.purchaseTickets(ticketPurchaseRequest);
-        return null;
+        if (status){
+            return ResponseEntity.ok("Tickets purchased successfully !");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
     @GetMapping("/events")

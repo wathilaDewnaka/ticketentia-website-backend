@@ -1,6 +1,7 @@
 package com.tickentia.backend.service.ticketing;
 
 import com.tickentia.backend.dto.InitializerRequest;
+import com.tickentia.backend.dto.Ticket;
 import com.tickentia.backend.dto.TicketPurchaseRequest;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Sessions;
@@ -91,7 +92,9 @@ public class TicketingServiceImplementation implements TicketingService {
 
         if (sessions.isPresent() && customers.isPresent()) {
             Sessions session = sessions.get();
-
+            if (!(customers.get().getCustomerType().equals("VIP-CUSTOMER") && session.getEventType().equals("VIP"))){
+                return false;
+            }
             TicketPool ticketPool = ticketPoolHashMap.get(ticketPurchaseRequest.getSessionId());
 
             Customer customer = new Customer(customerRepository, ticketHistoryRepository, session, ticketPool, ticketPurchaseRequest);
@@ -103,6 +106,17 @@ public class TicketingServiceImplementation implements TicketingService {
 
         return false;
     }
+
+    @Override
+    public TicketPools getTicketPool(long sessionId) {
+        Optional<TicketPools> ticketPools = ticketPoolsRepository.findById(sessionId);
+        if (ticketPools.isPresent()){
+            return ticketPools.get();
+        }
+
+        return null;
+    }
+
 
     @Override
     public boolean stopSession(long sessionId) {

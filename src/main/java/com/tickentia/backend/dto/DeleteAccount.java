@@ -1,6 +1,6 @@
 package com.tickentia.backend.dto;
 
-public class ManageRequest {
+public class DeleteAccount {
     private String email;
     private String userType;
 

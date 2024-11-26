@@ -55,4 +55,16 @@ public class SignUpRequest extends LoginRequest{
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
+
+    @Override
+    public String toString() {
+        return "SignUpRequest{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", address='" + address + '\'' +
+                ", country='" + country + '\'' +
+                ", brOrNICNumber='" + brOrNICNumber + '\'' +
+                ", telephone='" + telephone + '\'' +
+                '}';
+    }
 }

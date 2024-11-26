@@ -59,4 +59,9 @@ public class Vendor {
     public ResponseEntity<?> getSessionsById(@PathVariable long sessionId){
         return ResponseEntity.ok(vendorService.getEvent(sessionId));
     }
+
+    @GetMapping("/ticket-pool/{sessionId}")
+    public ResponseEntity<?> getTicketPool(@PathVariable long sessionId){
+        return ResponseEntity.ok(ticketingService.getTicketPool(sessionId));
+    }
 }

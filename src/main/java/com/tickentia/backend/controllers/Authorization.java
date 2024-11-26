@@ -68,7 +68,7 @@ public class Authorization {
                 if (customers.isPresent()) {
                     Customers customer = customers.get();
                     String jwtToken = jwtService.generateToken(customer);
-                    String role = customer.getCustomerType() == "REGULAR" ? "CUSTOMER" : "VIP-CUSTOMER";
+                    String role = (customer.getCustomerType().equals("CUSTOMER")) ? "CUSTOMER" : "VIP-CUSTOMER";
 
                     AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwtToken, customer.getName(), role, customer.getCustomerId());
                     return ResponseEntity.ok(authenticationResponse);

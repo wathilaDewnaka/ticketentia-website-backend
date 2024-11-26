@@ -80,7 +80,9 @@ public class Customer implements Runnable{
                         new Date(),
                         discount,
                         session.getTicketPrice(),
-                        finalAmount
+                        finalAmount,
+                        session.getEventVenue(),
+                        session.getEventImage()
                 );
 
                 // Update customer total purchases

@@ -57,7 +57,6 @@ public class CustomerServiceImplementation implements CustomerService {
         if (!sessionCurrent.isActive()){
             return null;
         }
-
         sessionCurrent.setReturnedImage(Base64.getEncoder().encodeToString(sessionCurrent.getEventImage()));
         return sessionCurrent;
     }
@@ -65,6 +64,13 @@ public class CustomerServiceImplementation implements CustomerService {
     @Override
     public List<TicketHistory> bookingHistory(long customerId) {
         List<TicketHistory> ticketHistories = ticketHistoryRepository.findAllByCustomerId(customerId);
-        return ticketHistories;
+        return ticketHistories.stream().map(session -> {
+            if (session.getEventImage() != null) {
+                // Encode the byte array to a Base64 string
+                String base64Image = Base64.getEncoder().encodeToString(session.getEventImage());
+                session.setReturnedImage(base64Image);  // Set the encoded image
+            }
+            return session;
+        }).collect(Collectors.toList());
     }
 }

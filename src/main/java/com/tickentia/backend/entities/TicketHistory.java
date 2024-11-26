@@ -20,10 +20,15 @@ public class TicketHistory {
     private double discount;
     private double ticketPrice;
     private double totalPrice;
+    private String eventVenue;
+    private String returnedImage;
+
+    @Lob
+    private byte[] eventImage;
 
     public TicketHistory(){ }
 
-    public TicketHistory(long customerId, int quantity, String eventName, String eventTime, String seatNumbers, String eventDate, Date purchasedDate, double discount, double ticketPrice, double totalPrice) {
+    public TicketHistory(long customerId, int quantity, String eventName, String eventTime, String seatNumbers, String eventDate, Date purchasedDate, double discount, double ticketPrice, double totalPrice, String eventVenue, byte[] eventImage) {
         this.customerId = customerId;
         this.quantity = quantity;
         this.eventName = eventName;
@@ -34,6 +39,16 @@ public class TicketHistory {
         this.discount = discount;
         this.ticketPrice = ticketPrice;
         this.totalPrice = totalPrice;
+        this.eventVenue = eventVenue;
+        this.eventImage = eventImage;
+    }
+
+    public long getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(long recordId) {
+        this.recordId = recordId;
     }
 
     public long getCustomerId() {
@@ -76,14 +91,6 @@ public class TicketHistory {
         this.seatNumbers = seatNumbers;
     }
 
-    public long getRecordId() {
-        return recordId;
-    }
-
-    public void setRecordId(long recordId) {
-        this.recordId = recordId;
-    }
-
     public String getEventDate() {
         return eventDate;
     }
@@ -122,5 +129,29 @@ public class TicketHistory {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getEventVenue() {
+        return eventVenue;
+    }
+
+    public void setEventVenue(String eventVenue) {
+        this.eventVenue = eventVenue;
+    }
+
+    public String getReturnedImage() {
+        return returnedImage;
+    }
+
+    public void setReturnedImage(String returnedImage) {
+        this.returnedImage = returnedImage;
+    }
+
+    public byte[] getEventImage() {
+        return eventImage;
+    }
+
+    public void setEventImage(byte[] eventImage) {
+        this.eventImage = eventImage;
     }
 }

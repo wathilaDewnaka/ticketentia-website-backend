@@ -1,5 +1,7 @@
 package com.tickentia.backend.service.admin;
 
+import com.tickentia.backend.dto.SignUpRequest;
+import com.tickentia.backend.dto.UpdatePassword;
 import com.tickentia.backend.entities.AdminDetails;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Sessions;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -73,6 +76,47 @@ public class AdminServiceImplementation implements AdminService{
 
     @Override
     public List<Sessions> getAllEvents() {
-        return sessionsRepository.findAll();
+        return sessionsRepository.findByIsActiveTrue();
+    }
+
+    @Override
+    public boolean updatePassword(UpdatePassword updatePassword) {
+        if (Objects.equals(updatePassword.getUserType(), "VENDOR")){
+            Optional<Vendors> optionalVendor = vendorRepository.findByEmail(updatePassword.getEmail());
+
+            if (optionalVendor.isPresent()){
+                Vendors vendor = optionalVendor.get();
+                vendor.setPassword(passwordEncoder.encode(updatePassword.getPassword()));
+                vendorRepository.save(vendor);
+                return true;
+            }
+        }
+
+        Optional<Customers> optionalCustomer = customerRepository.findByEmail(updatePassword.getEmail());
+
+        if (optionalCustomer.isPresent()){
+            Customers customer = optionalCustomer.get();
+            customer.setPassword(passwordEncoder.encode(updatePassword.getPassword()));
+            customerRepository.save(customer);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean addUser(SignUpRequest signUpRequest) {
+        if (signUpRequest.getUserType().equals("VENDOR")){
+            Vendors vendor = new Vendors(signUpRequest.getFirstName() + " " + signUpRequest.getLastName(), signUpRequest.getEmail(), passwordEncoder.encode(signUpRequest.getPassword()), signUpRequest.getCountry(), signUpRequest.getAddress(), signUpRequest.getTelephone(), signUpRequest.getBrOrNICNumber());
+            vendorRepository.save(vendor);
+            return true;
+
+        } else if(signUpRequest.getUserType().equals("CUSTOMER")){
+            Customers customer = new Customers(signUpRequest.getFirstName() + " " + signUpRequest.getLastName(), signUpRequest.getEmail(), passwordEncoder.encode(signUpRequest.getPassword()), signUpRequest.getTelephone(), signUpRequest.getAddress(), signUpRequest.getCountry(), signUpRequest.getBrOrNICNumber(), "CUSTOMER", 0);
+            customerRepository.save(customer);
+            return true;
+
+        }
+
+        return false;
     }
 }
