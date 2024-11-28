@@ -2,6 +2,7 @@ package com.tickentia.backend.service.customer;
 
 import com.tickentia.backend.entities.Sessions;
 import com.tickentia.backend.entities.TicketHistory;
+import com.tickentia.backend.enums.EventType;
 import com.tickentia.backend.respositary.SessionsRepository;
 import com.tickentia.backend.respositary.TicketHistoryRepository;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class CustomerServiceImplementation implements CustomerService {
 
     @Override
     public List<Sessions> getAllRegularEvents() {
-        List<Sessions> sessions = sessionsRepository.findByIsActiveTrueAndEventTypeEquals("Regular");
+        List<Sessions> sessions = sessionsRepository.findByIsActiveTrueAndEventTypeEquals(EventType.REGULAR.name());
 
         return sessions.stream().map(session -> {
             if (session.getEventImage() != null) {

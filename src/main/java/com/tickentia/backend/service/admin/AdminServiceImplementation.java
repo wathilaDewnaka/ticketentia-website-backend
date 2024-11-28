@@ -1,6 +1,5 @@
 package com.tickentia.backend.service.admin;
 
-import com.tickentia.backend.controllers.Vendor;
 import com.tickentia.backend.dto.DeleteAccount;
 import com.tickentia.backend.dto.SignUpRequest;
 import com.tickentia.backend.dto.UpdatePassword;
@@ -8,11 +7,13 @@ import com.tickentia.backend.entities.AdminDetails;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Sessions;
 import com.tickentia.backend.entities.Vendors;
+import com.tickentia.backend.enums.UserType;
 import com.tickentia.backend.respositary.AdminRepository;
 import com.tickentia.backend.respositary.CustomerRepository;
 import com.tickentia.backend.respositary.SessionsRepository;
 import com.tickentia.backend.respositary.VendorRepository;
 import jakarta.annotation.PostConstruct;
+import org.apache.catalina.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,10 +48,15 @@ public class AdminServiceImplementation implements AdminService{
 
     @Override
     public boolean deleteAccount(DeleteAccount deleteAccount) {
-        if (Objects.equals(deleteAccount.getUserType(), "VENDOR")){
+        if (Objects.equals(deleteAccount.getUserType(), UserType.VENDOR.name())){
             Optional<Vendors> vendor = vendorRepository.findByEmail(deleteAccount.getEmail());
 
             if (vendor.isPresent()){
+                List<Sessions> sessions = sessionsRepository.findByVendorId(vendor.get().getVendorId());
+                for (Sessions session: sessions){
+
+                }
+
                 vendorRepository.delete(vendor.get());
                 return true;
             }
@@ -82,7 +88,7 @@ public class AdminServiceImplementation implements AdminService{
 
     @Override
     public boolean updatePassword(UpdatePassword updatePassword) {
-        if (Objects.equals(updatePassword.getUserType(), "VENDOR")){
+        if (Objects.equals(updatePassword.getUserType(), UserType.VENDOR.name())){
             Optional<Vendors> optionalVendor = vendorRepository.findByEmail(updatePassword.getEmail());
 
             if (optionalVendor.isPresent()){
@@ -106,12 +112,12 @@ public class AdminServiceImplementation implements AdminService{
 
     @Override
     public boolean addUser(SignUpRequest signUpRequest) {
-        if (signUpRequest.getUserType().equals("VENDOR")){
+        if (signUpRequest.getUserType().equals(UserType.VENDOR.name())){
             Vendors vendor = new Vendors(signUpRequest.getFirstName() + " " + signUpRequest.getLastName(), signUpRequest.getEmail(), passwordEncoder.encode(signUpRequest.getPassword()), signUpRequest.getCountry(), signUpRequest.getAddress(), signUpRequest.getTelephone(), signUpRequest.getBrOrNICNumber());
             vendorRepository.save(vendor);
             return true;
 
-        } else if(signUpRequest.getUserType().equals("CUSTOMER")){
+        } else if(signUpRequest.getUserType().equals(UserType.CUSTOMER.name())){
             Customers customer = new Customers(signUpRequest.getFirstName() + " " + signUpRequest.getLastName(), signUpRequest.getEmail(), passwordEncoder.encode(signUpRequest.getPassword()), signUpRequest.getTelephone(), signUpRequest.getAddress(), signUpRequest.getCountry(), signUpRequest.getBrOrNICNumber(), "CUSTOMER", 0);
             customerRepository.save(customer);
             return true;

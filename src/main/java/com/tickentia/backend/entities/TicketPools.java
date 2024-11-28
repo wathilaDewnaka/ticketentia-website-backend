@@ -74,4 +74,16 @@ public class TicketPools {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    @Override
+    public String toString() {
+        return "TicketPools{" +
+                "sessionId=" + sessionId +
+                ", currentTicketsInPool=" + currentTicketsInPool +
+                ", maxTicketCapacity=" + maxTicketCapacity +
+                ", releaseTicketCount=" + releaseTicketCount +
+                ", totalTickets=" + totalTickets +
+                ", isActive=" + isActive +
+                '}';
+    }
 }

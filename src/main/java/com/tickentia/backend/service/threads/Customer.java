@@ -5,6 +5,7 @@ import com.tickentia.backend.dto.TicketPurchaseRequest;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Sessions;
 import com.tickentia.backend.entities.TicketHistory;
+import com.tickentia.backend.enums.UserType;
 import com.tickentia.backend.respositary.CustomerRepository;
 import com.tickentia.backend.respositary.TicketHistoryRepository;
 import com.tickentia.backend.service.ticketpool.TicketPool;
@@ -53,16 +54,17 @@ public class Customer implements Runnable{
                 }
             }
 
-            if (ticketPurchaseRequest.getQuantity() == purchasedTickets.size()) {
+            if (!purchasedTickets.isEmpty()) {
                 String seatNumbers = "";
                 for (Ticket ti : purchasedTickets){
                     seatNumbers += "Seat - " + ti.getSeatNo() + ", ";
                 }
 
                 // Update customer type if eligible for VIP status
-                if (customer.getTotalPurchases() >= 50000 && "CUSTOMER".equals(customer.getCustomerType())) {
-                    customer.setCustomerType("VIP-CUSTOMER");
+                if (customer.getTotalPurchases() >= 50000 && UserType.CUSTOMER.name().equals(customer.getCustomerType())) {
+                    customer.setCustomerType(UserType.VIP_CUSTOMER.name());
                 }
+                seatNumbers = seatNumbers.substring(0, seatNumbers.length() - 1);
 
                 // Calculate discount and update customer purchases
                 double discount = (customer.getTotalPurchases() >= 50000) ? session.getVipDiscount() : 0;

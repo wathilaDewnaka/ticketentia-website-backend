@@ -15,4 +15,6 @@ public interface SessionsRepository extends JpaRepository<Sessions, Long> {
     List<Sessions> findByVendorIdAndIsActiveTrue(long vendorId);
 
     List<Sessions> findByVendorIdAndIsActiveFalse(long vendorId);
+
+    List<Sessions> findByVendorId(long vendorId);
 }

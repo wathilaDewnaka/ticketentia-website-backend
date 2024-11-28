@@ -12,59 +12,47 @@ public class SignUpRequest extends LoginRequest{
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName() {
         return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getCountry() {
         return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public String getBrOrNICNumber() {
         return brOrNICNumber;
     }
 
-    public void setBrOrNICNumber(String brOrNICNumber) {
-        this.brOrNICNumber = brOrNICNumber;
-    }
-
     public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    @Override
-    public String toString() {
-        return "SignUpRequest{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", address='" + address + '\'' +
-                ", country='" + country + '\'' +
-                ", brOrNICNumber='" + brOrNICNumber + '\'' +
-                ", telephone='" + telephone + '\'' +
-                '}';
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setBrOrNICNumber(String brOrNICNumber) {
+        this.brOrNICNumber = brOrNICNumber;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 }

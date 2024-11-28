@@ -5,7 +5,6 @@ import com.tickentia.backend.entities.TicketPools;
 import com.tickentia.backend.respositary.SessionsRepository;
 import com.tickentia.backend.respositary.TicketPoolsRepository;
 import com.tickentia.backend.respositary.VendorRepository;
-import com.tickentia.backend.service.ticketpool.TicketPool;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,9 +36,7 @@ public class VendorServiceImplementation implements VendorService {
         Optional<Sessions> session = sessionsRepository.findById(sessionId);
 
         Sessions sessionCurrent = session.get();
-        if (!sessionCurrent.isActive()){
-            return null;
-        } else if(sessionCurrent.getEventImage() != null){
+        if(sessionCurrent.getEventImage() != null){
             sessionCurrent.setReturnedImage(Base64.getEncoder().encodeToString(sessionCurrent.getEventImage()));
         }
 
@@ -49,6 +46,11 @@ public class VendorServiceImplementation implements VendorService {
     @Override
     public TicketPools getTicketPoolBySession(long sessionId) {
         Optional<TicketPools> ticketPools = ticketPoolsRepository.findById(sessionId);
-        return ticketPools.isPresent() ? ticketPools.get() : null;
+
+        if (ticketPools.isPresent()){
+            return ticketPools.get();
+        }
+
+        return null;
     }
 }

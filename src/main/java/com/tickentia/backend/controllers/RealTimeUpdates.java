@@ -21,11 +21,11 @@ public class RealTimeUpdates {
     @MessageMapping("/dashboard")
     public void getTicketPool(@Payload SocketDTO socketDTO) {
         TicketPools ticketPools = vendorService.getTicketPoolBySession(socketDTO.getSessionId());
+
         if (ticketPools == null) {
             throw new RuntimeException("No ticket pools found for sessionId: " + socketDTO.getSessionId());
         }
 
         simpMessagingTemplate.convertAndSend("/topic/updates/" + socketDTO.getSessionId(), ticketPools);
     }
-
 }

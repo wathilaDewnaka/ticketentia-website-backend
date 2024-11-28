@@ -1,12 +1,13 @@
 package com.tickentia.backend.service.ticketing;
 
 import com.tickentia.backend.dto.InitializerRequest;
-import com.tickentia.backend.dto.Ticket;
 import com.tickentia.backend.dto.TicketPurchaseRequest;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Sessions;
 import com.tickentia.backend.entities.TicketPools;
 import com.tickentia.backend.entities.Vendors;
+import com.tickentia.backend.enums.EventType;
+import com.tickentia.backend.enums.UserType;
 import com.tickentia.backend.respositary.*;
 import com.tickentia.backend.service.threads.Customer;
 import com.tickentia.backend.service.threads.Vendor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TicketingServiceImplementation implements TicketingService {
@@ -25,8 +27,8 @@ public class TicketingServiceImplementation implements TicketingService {
     private final CustomerRepository customerRepository;
     private final TicketHistoryRepository ticketHistoryRepository;
     private final TicketPoolsRepository ticketPoolsRepository;
-    private final Map<Long, TicketPool> ticketPoolHashMap = new HashMap<>();
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final Map<Long, TicketPool> ticketPoolHashMap;
 
     public TicketingServiceImplementation(VendorRepository vendorRepository, SessionsRepository sessionsRepository, CustomerRepository customerRepository, TicketHistoryRepository ticketHistoryRepository, TicketPoolsRepository ticketPoolsRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.vendorRepository = vendorRepository;
@@ -35,6 +37,7 @@ public class TicketingServiceImplementation implements TicketingService {
         this.ticketHistoryRepository = ticketHistoryRepository;
         this.ticketPoolsRepository = ticketPoolsRepository;
         this.simpMessagingTemplate = simpMessagingTemplate;
+        this.ticketPoolHashMap = new ConcurrentHashMap<>();
     }
 
     @PostConstruct
@@ -48,7 +51,7 @@ public class TicketingServiceImplementation implements TicketingService {
                 ticketPoolHashMap.put(currentSession.get().getSessionId(), ticketPoolObj);
 
                 Vendor vendor = new Vendor(ticketPoolObj, currentSession.get(), ticketPool.getReleaseTicketCount());
-                Thread thread = new Thread(vendor);
+                Thread thread = new Thread(vendor, "Vendor ID - " + currentSession.get().getVendorId());
                 thread.start();
             }
         }
@@ -64,7 +67,7 @@ public class TicketingServiceImplementation implements TicketingService {
 
             byte[] imageData = (initializerRequest.getEventImage() != null) ? initializerRequest.getEventImage().getBytes() : null;
 
-            Sessions newSession = new Sessions(currentVendor.getName(), currentVendor.getVendorId(), currentVendor.getEmail(), initializerRequest.getEventName(), initializerRequest.getEventVenue(), initializerRequest.getEventCategory(), initializerRequest.getEventTime(), initializerRequest.getEventDescription(), initializerRequest.getEventType(), initializerRequest.getEventDate(), new Date(), initializerRequest.getTicketPrice(), initializerRequest.getVipDiscount(), initializerRequest.getTotalTickets(), initializerRequest.getTicketReleaseRate(), initializerRequest.getCustomerRetrievalRate(), initializerRequest.getMaxTicketCapacity(), imageData);
+            Sessions newSession = new Sessions(currentVendor.getName(), currentVendor.getVendorId(), currentVendor.getEmail(), capitalize(initializerRequest.getEventName()), capitalize(initializerRequest.getEventVenue()), initializerRequest.getEventCategory().toUpperCase(), initializerRequest.getEventTime(), capitalize(initializerRequest.getEventDescription()), initializerRequest.getEventType().toUpperCase(), initializerRequest.getEventDate(), new Date(), initializerRequest.getTicketPrice(), initializerRequest.getVipDiscount(), initializerRequest.getTotalTickets(), initializerRequest.getTicketReleaseRate(), initializerRequest.getCustomerRetrievalRate(), initializerRequest.getMaxTicketCapacity(), imageData);
             sessionsRepository.save(newSession);
 
             // Configuring the entity of ticket pool for that event
@@ -93,7 +96,7 @@ public class TicketingServiceImplementation implements TicketingService {
         if (sessions.isPresent() && customers.isPresent()) {
             Sessions session = sessions.get();
 
-            if ("VIP".equals(session.getEventType()) && !"VIP-CUSTOMER".equals(customers.get().getCustomerType())) {
+            if (EventType.VIP.name().equals(session.getEventType()) && !UserType.VIP_CUSTOMER.name().equals(customers.get().getCustomerType())) {
                 return false;
             }
 
@@ -102,7 +105,7 @@ public class TicketingServiceImplementation implements TicketingService {
             Customer customer = new Customer(customerRepository, ticketHistoryRepository, session, ticketPool, ticketPurchaseRequest);
             Thread customerThread = new Thread(customer, "Customer ID - " + customers.get().getCustomerId());
 
-            if ("VIP-CUSTOMER".equals(customers.get().getCustomerType())){
+            if (UserType.VIP_CUSTOMER.name().equals(customers.get().getCustomerType())){
                 customerThread.setPriority(Thread.MAX_PRIORITY);
             }
 
@@ -146,5 +149,23 @@ public class TicketingServiceImplementation implements TicketingService {
         }
 
         return false;
+    }
+
+    private static String capitalize(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        String[] words = input.split(" "); // Split the input by spaces
+        String result = ""; // Initialize an empty string to hold the final result
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                // Capitalize the first letter and add the rest of the word in lowercase
+                result += Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase() + " ";
+            }
+        }
+
+        return result.trim(); // Remove any extra trailing space
     }
 }
