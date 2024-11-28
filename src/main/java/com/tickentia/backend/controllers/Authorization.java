@@ -6,11 +6,13 @@ import com.tickentia.backend.dto.SignUpRequest;
 import com.tickentia.backend.entities.AdminDetails;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Vendors;
+import com.tickentia.backend.enums.UserType;
 import com.tickentia.backend.others.JWTService;
 import com.tickentia.backend.respositary.AdminRepository;
 import com.tickentia.backend.respositary.CustomerRepository;
 import com.tickentia.backend.respositary.VendorRepository;
 import com.tickentia.backend.service.auth.AuthorizationService;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,7 +44,7 @@ public class Authorization {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest){
-        if (Objects.equals(signUpRequest.getUserType(), "CUSTOMER")){
+        if (Objects.equals(signUpRequest.getUserType(), UserType.CUSTOMER.name())){
             if (authorizationService.isCustomerExist(signUpRequest.getEmail())){
                 return new ResponseEntity<>("User already exists", HttpStatus.NOT_ACCEPTABLE);
             }
@@ -60,7 +62,7 @@ public class Authorization {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
-            if (Objects.equals(loginRequest.getUserType(), "CUSTOMER")) {
+            if (Objects.equals(loginRequest.getUserType(), UserType.CUSTOMER.name())) {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("customer." + loginRequest.getEmail(), loginRequest.getPassword()));
 
                 Optional<Customers> customers = customerRepository.findByEmail(loginRequest.getEmail());
@@ -75,7 +77,7 @@ public class Authorization {
                 } else {
                     return ResponseEntity.status(404).body("User not found");
                 }
-            } else if (Objects.equals(loginRequest.getUserType(), "VENDOR")) {
+            } else if (Objects.equals(loginRequest.getUserType(), UserType.VENDOR.name())) {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("vendor." + loginRequest.getEmail(), loginRequest.getPassword()));
                 Optional<Vendors> vendors = vendorRepository.findByEmail(loginRequest.getEmail());
 

@@ -41,7 +41,7 @@ public class JWTService {
     }
 
     public String generateToken(Map<String, Object> extractClaims, UserDetails userDetails){
-        return Jwts.builder().setClaims(extractClaims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)).signWith(getSigninKey(), SignatureAlgorithm.HS256).compact();
+        return Jwts.builder().setClaims(extractClaims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).signWith(getSigninKey(), SignatureAlgorithm.HS256).compact();
 
     }
 
@@ -49,14 +49,7 @@ public class JWTService {
         final String username = extractUsername(token);
         System.out.println(username);
         System.out.println(userDetails.getUsername());
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername());
     }
 
-    public boolean isTokenExpired(String token){
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token){
-        return extractClaims(token, Claims::getExpiration);
-    }
 }

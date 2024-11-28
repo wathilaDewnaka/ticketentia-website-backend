@@ -76,7 +76,7 @@ public class TicketingServiceImplementation implements TicketingService {
             ticketPoolHashMap.put(newSession.getSessionId(), ticketPool);
 
             Vendor vendor = new Vendor(ticketPool, newSession);
-            Thread vendorThread = new Thread(vendor);
+            Thread vendorThread = new Thread(vendor, "Vendor ID - " + currentVendor.getVendorId());
             vendorThread.start();
             return true;
 
@@ -92,15 +92,21 @@ public class TicketingServiceImplementation implements TicketingService {
 
         if (sessions.isPresent() && customers.isPresent()) {
             Sessions session = sessions.get();
-            if (!(customers.get().getCustomerType().equals("VIP-CUSTOMER") && session.getEventType().equals("VIP"))){
+
+            if ("VIP".equals(session.getEventType()) && !"VIP-CUSTOMER".equals(customers.get().getCustomerType())) {
                 return false;
             }
+
             TicketPool ticketPool = ticketPoolHashMap.get(ticketPurchaseRequest.getSessionId());
 
             Customer customer = new Customer(customerRepository, ticketHistoryRepository, session, ticketPool, ticketPurchaseRequest);
-            Thread customerThread = new Thread(customer);
-            customerThread.start();
+            Thread customerThread = new Thread(customer, "Customer ID - " + customers.get().getCustomerId());
 
+            if ("VIP-CUSTOMER".equals(customers.get().getCustomerType())){
+                customerThread.setPriority(Thread.MAX_PRIORITY);
+            }
+
+            customerThread.start();
             return true;
         }
 

@@ -34,14 +34,12 @@ public class Admin {
 
     @PostMapping("/delete-account")
     public ResponseEntity<?> removeAccount(@RequestBody DeleteAccount deleteAccount){
-        if (Objects.equals(deleteAccount.getUserType(), "VENDOR")){
-            boolean status = adminService.deleteVendor(deleteAccount.getEmail());
-            return ResponseEntity.ok("Vendor deleted !");
-        } else if (Objects.equals(deleteAccount.getUserType(), "CUSTOMER")){
-            boolean status = adminService.deleteCustomer(deleteAccount.getEmail());
-            return ResponseEntity.ok("Customer deleted !");
+        boolean status = adminService.deleteAccount(deleteAccount);
+        if (status){
+            return ResponseEntity.ok("Deleted the account");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to delete user");
+
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Failed to delete account");
     }
 
     @PostMapping("/update")

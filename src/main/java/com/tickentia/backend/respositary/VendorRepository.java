@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface VendorRepository extends JpaRepository<Vendors, Long> {
     Optional<Vendors> findByEmail(String username);
 
-    void deleteByEmail(String email);
 }

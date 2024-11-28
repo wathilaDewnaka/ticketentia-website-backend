@@ -1,5 +1,7 @@
 package com.tickentia.backend.service.admin;
 
+import com.tickentia.backend.controllers.Vendor;
+import com.tickentia.backend.dto.DeleteAccount;
 import com.tickentia.backend.dto.SignUpRequest;
 import com.tickentia.backend.dto.UpdatePassword;
 import com.tickentia.backend.entities.AdminDetails;
@@ -44,23 +46,22 @@ public class AdminServiceImplementation implements AdminService{
     }
 
     @Override
-    public boolean deleteVendor(String email) {
-        Optional<Vendors> vendors = vendorRepository.findByEmail(email);
-        if (vendors.isPresent()) {
-            vendorRepository.deleteByEmail(email);
-            return true;
+    public boolean deleteAccount(DeleteAccount deleteAccount) {
+        if (Objects.equals(deleteAccount.getUserType(), "VENDOR")){
+            Optional<Vendors> vendor = vendorRepository.findByEmail(deleteAccount.getEmail());
+
+            if (vendor.isPresent()){
+                vendorRepository.delete(vendor.get());
+                return true;
+            }
         }
+        Optional<Customers> customers = customerRepository.findByEmail(deleteAccount.getEmail());
 
-        return false;
-    }
-
-    @Override
-    public boolean deleteCustomer(String email) {
-        Optional<Customers> customers = customerRepository.findByEmail(email);
         if (customers.isPresent()){
-            customerRepository.deleteByEmail(email);
+            customerRepository.delete(customers.get());
             return true;
         }
+
         return false;
     }
 

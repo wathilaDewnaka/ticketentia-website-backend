@@ -39,9 +39,10 @@ public class VendorServiceImplementation implements VendorService {
         Sessions sessionCurrent = session.get();
         if (!sessionCurrent.isActive()){
             return null;
+        } else if(sessionCurrent.getEventImage() != null){
+            sessionCurrent.setReturnedImage(Base64.getEncoder().encodeToString(sessionCurrent.getEventImage()));
         }
 
-        sessionCurrent.setReturnedImage(Base64.getEncoder().encodeToString(sessionCurrent.getEventImage()));
         return sessionCurrent;
     }
 
