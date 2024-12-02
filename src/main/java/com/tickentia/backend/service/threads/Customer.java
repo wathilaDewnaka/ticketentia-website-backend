@@ -22,6 +22,7 @@ public class Customer implements Runnable{
     private final TicketPurchaseRequest ticketPurchaseRequest;
     private final TicketPool ticketPool;
     private final int customerRetrievalRate;
+    private final List<Ticket> purchasedTickets;
 
     public Customer(CustomerRepository customerRepository, TicketHistoryRepository ticketHistoryRepository, Sessions session, TicketPool ticketPool, TicketPurchaseRequest ticketPurchaseRequest) {
         this.customerRepository = customerRepository;
@@ -30,13 +31,13 @@ public class Customer implements Runnable{
         this.ticketPool = ticketPool;
         this.ticketPurchaseRequest = ticketPurchaseRequest;
         this.customerRetrievalRate = session.getCustomerRetrievalRate();
+        this.purchasedTickets = new LinkedList<>();
     }
 
     @Override
     public void run() {
         Optional<Customers> optionalCustomer = customerRepository.findById(ticketPurchaseRequest.getCustomerId());
-        List<Ticket> purchasedTickets = new LinkedList<>();
-        double totalPurchase = 0;
+        double totalPurchases = 0;
 
         if (optionalCustomer.isPresent()){
             Customers customer = optionalCustomer.get();
@@ -44,56 +45,59 @@ public class Customer implements Runnable{
             for (int i = 1; i <= ticketPurchaseRequest.getQuantity(); i++) {
                 try {
                     Ticket ticket = ticketPool.removeTicket();
-                    totalPurchase += ticket.getEventPrice();
+                    totalPurchases += ticket.getEventPrice();
 
                     purchasedTickets.add(ticket);
 
-                    Thread.sleep(customerRetrievalRate);
+                    Thread.sleep(customerRetrievalRate * 1000L);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
 
-            if (!purchasedTickets.isEmpty()) {
-                String seatNumbers = "";
-                for (Ticket ti : purchasedTickets){
-                    seatNumbers += "Seat - " + ti.getSeatNo() + ", ";
-                }
+            updateValues(customer, totalPurchases);
 
-                // Update customer type if eligible for VIP status
-                if (customer.getTotalPurchases() >= 50000 && UserType.CUSTOMER.name().equals(customer.getCustomerType())) {
-                    customer.setCustomerType(UserType.VIP_CUSTOMER.name());
-                }
-                seatNumbers = seatNumbers.substring(0, seatNumbers.length() - 1);
+        }
+    }
 
-                // Calculate discount and update customer purchases
-                double discount = (customer.getTotalPurchases() >= 50000) ? session.getVipDiscount() : 0;
-                double discountedAmount = totalPurchase * discount / 100;
-                double finalAmount = totalPurchase - discountedAmount;
-
-
-                TicketHistory ticketHistory = new TicketHistory(
-                        ticketPurchaseRequest.getCustomerId(),
-                        purchasedTickets.size(),
-                        session.getEventName(),
-                        session.getEventTime(),
-                        seatNumbers,
-                        session.getEventDate(),
-                        new Date(),
-                        discount,
-                        session.getTicketPrice(),
-                        finalAmount,
-                        session.getEventVenue(),
-                        session.getEventImage()
-                );
-
-                // Update customer total purchases
-                customer.setTotalPurchases(customer.getTotalPurchases() + finalAmount);
-
-                // Save ticket history and customer
-                ticketHistoryRepository.save(ticketHistory);
-                customerRepository.save(customer);
+    private void updateValues(Customers customer, double totalPurchase){
+        if (!purchasedTickets.isEmpty()) {
+            String seatNumbers = "";
+            for (Ticket ti : purchasedTickets){
+                seatNumbers += "Seat - " + ti.getSeatNo() + ", ";
             }
+
+            // Update customer type if eligible for VIP status
+            if (customer.getTotalPurchases() >= 50000 && UserType.CUSTOMER.name().equals(customer.getCustomerType())) {
+                customer.setCustomerType(UserType.VIP_CUSTOMER.name());
+            }
+            seatNumbers = seatNumbers.substring(0, seatNumbers.length() - 1);
+
+            // Calculate discount and update customer purchases
+            double discount = (customer.getTotalPurchases() >= 50000) ? session.getVipDiscount() : 0;
+            double discountedAmount = totalPurchase * discount / 100;
+            double finalAmount = totalPurchase - discountedAmount;
+
+            TicketHistory ticketHistory = new TicketHistory(
+                    ticketPurchaseRequest.getCustomerId(),
+                    purchasedTickets.size(),
+                    session.getEventName(),
+                    session.getEventTime(),
+                    seatNumbers,
+                    session.getEventDate(),
+                    new Date(),
+                    discount,
+                    session.getTicketPrice(),
+                    finalAmount,
+                    session.getEventVenue(),
+                    session.getEventImage()
+            );
+            // Update customer total purchases
+            customer.setTotalPurchases(customer.getTotalPurchases() + finalAmount);
+
+            // Save ticket history and customer
+            ticketHistoryRepository.save(ticketHistory);
+            customerRepository.save(customer);
         }
     }
 }

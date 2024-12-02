@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "VENDORS")
+@Table(name = "Vendors")
 public class Vendors implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

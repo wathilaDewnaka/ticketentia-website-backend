@@ -141,4 +141,25 @@ public class InitializerRequest {
     public int getMaxTicketCapacity() {
         return maxTicketCapacity;
     }
+
+    @Override
+    public String toString() {
+        return "InitializerRequest{" +
+                "vendorId=" + vendorId +
+                ", eventImage=" + eventImage +
+                ", eventName='" + eventName + '\'' +
+                ", eventVenue='" + eventVenue + '\'' +
+                ", eventCategory='" + eventCategory + '\'' +
+                ", eventTime='" + eventTime + '\'' +
+                ", eventDescription='" + eventDescription + '\'' +
+                ", eventType='" + eventType + '\'' +
+                ", eventDate='" + eventDate + '\'' +
+                ", ticketPrice=" + ticketPrice +
+                ", vipDiscount=" + vipDiscount +
+                ", totalTickets=" + totalTickets +
+                ", ticketReleaseRate=" + ticketReleaseRate +
+                ", customerRetrievalRate=" + customerRetrievalRate +
+                ", maxTicketCapacity=" + maxTicketCapacity +
+                '}';
+    }
 }

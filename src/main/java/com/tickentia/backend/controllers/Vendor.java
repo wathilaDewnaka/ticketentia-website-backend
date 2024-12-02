@@ -1,6 +1,7 @@
 package com.tickentia.backend.controllers;
 
 import com.tickentia.backend.dto.InitializerRequest;
+import com.tickentia.backend.dto.SuccessResponse;
 import com.tickentia.backend.service.ticketing.TicketingService;
 import com.tickentia.backend.service.ticketing.TicketingServiceImplementation;
 import com.tickentia.backend.service.vendor.VendorService;
@@ -25,16 +26,19 @@ public class Vendor {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<String> startSession(@ModelAttribute InitializerRequest initializerRequest) {
+    public ResponseEntity<?> startSession(@ModelAttribute InitializerRequest initializerRequest) {
+        System.out.println(initializerRequest);
         try {
             boolean status = ticketingService.configureSession(initializerRequest);
 
             if (status) {
-                return ResponseEntity.ok("Session created successfully");
+                SuccessResponse successResponse = new SuccessResponse(true, "Session started successfully !");
+                return ResponseEntity.ok(successResponse);
             } else {
                 return ResponseEntity.status(500).body("Failed to create session");
             }
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(500).body("An error occurred while creating the session");
         }
     }

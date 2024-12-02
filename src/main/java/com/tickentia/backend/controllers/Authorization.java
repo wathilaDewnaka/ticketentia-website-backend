@@ -62,25 +62,25 @@ public class Authorization {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
-            if (Objects.equals(loginRequest.getUserType(), UserType.CUSTOMER.name())) {
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("customer." + loginRequest.getEmail(), loginRequest.getPassword()));
+            if (Objects.equals(loginRequest.getUserType().toUpperCase(), UserType.CUSTOMER.name())) {
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("customer." + loginRequest.getEmail().toLowerCase().strip(), loginRequest.getPassword().strip()));
 
-                Optional<Customers> customers = customerRepository.findByEmail(loginRequest.getEmail());
+                Optional<Customers> customers = customerRepository.findByEmail(loginRequest.getEmail().toLowerCase().strip());
 
                 if (customers.isPresent()) {
                     Customers customer = customers.get();
                     String jwtToken = jwtService.generateToken(customer);
-                    String role = (customer.getCustomerType().equals("CUSTOMER")) ? "CUSTOMER" : "VIP-CUSTOMER";
+                    String role = (customer.getCustomerType().equals(UserType.CUSTOMER.name())) ? UserType.CUSTOMER.name() : UserType.VIP_CUSTOMER.name();
 
                     AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwtToken, customer.getName(), role, customer.getCustomerId());
                     return ResponseEntity.ok(authenticationResponse);
                 } else {
                     return ResponseEntity.status(404).body("User not found");
                 }
-            } else if (Objects.equals(loginRequest.getUserType(), UserType.VENDOR.name())) {
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("vendor." + loginRequest.getEmail(), loginRequest.getPassword()));
-                Optional<Vendors> vendors = vendorRepository.findByEmail(loginRequest.getEmail());
+            } else if (Objects.equals(loginRequest.getUserType().toUpperCase(), UserType.VENDOR.name())) {
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("vendor." + loginRequest.getEmail().toLowerCase().strip(), loginRequest.getPassword().strip()));
 
+                Optional<Vendors> vendors = vendorRepository.findByEmail(loginRequest.getEmail().toLowerCase().strip());
                 if (vendors.isPresent()) {
                     Vendors vendor = vendors.get();
                     String jwtToken = jwtService.generateToken(vendor);
@@ -91,9 +91,9 @@ public class Authorization {
                     return ResponseEntity.status(404).body("User not found");
                 }
             } else {
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("admin." + loginRequest.getEmail(), loginRequest.getPassword()));
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("admin." + loginRequest.getEmail().toLowerCase().strip(), loginRequest.getPassword().strip()));
 
-                Optional<AdminDetails> adminDetails = adminRepository.findByEmail(loginRequest.getEmail());
+                Optional<AdminDetails> adminDetails = adminRepository.findByEmail(loginRequest.getEmail().toLowerCase().strip());
                 if (adminDetails.isPresent()){
                     AdminDetails admin = adminDetails.get();
                     String jwtToken = jwtService.generateToken(admin);

@@ -1,5 +1,6 @@
 package com.tickentia.backend.controllers;
 
+import com.tickentia.backend.dto.SuccessResponse;
 import com.tickentia.backend.dto.TicketPurchaseRequest;
 import com.tickentia.backend.service.customer.CustomerService;
 import com.tickentia.backend.service.ticketing.TicketingService;
@@ -24,7 +25,8 @@ public class Customer {
     public ResponseEntity<?> purchaseTicket(@RequestBody TicketPurchaseRequest ticketPurchaseRequest){
         boolean status = ticketingService.purchaseTickets(ticketPurchaseRequest);
         if (status){
-            return ResponseEntity.ok("Tickets purchased successfully !");
+            SuccessResponse successResponse = new SuccessResponse(true, "Tickets purchased successfully !");
+            return ResponseEntity.ok(successResponse);
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }

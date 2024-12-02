@@ -21,6 +21,7 @@ public class RealTimeUpdates {
     @MessageMapping("/dashboard")
     public void getTicketPool(@Payload SocketDTO socketDTO) {
         TicketPools ticketPools = vendorService.getTicketPoolBySession(socketDTO.getSessionId());
+        System.out.println(ticketPools);
 
         if (ticketPools == null) {
             throw new RuntimeException("No ticket pools found for sessionId: " + socketDTO.getSessionId());

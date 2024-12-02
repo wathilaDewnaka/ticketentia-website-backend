@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "SESSIONS")
+@Table(name = "Sessions")
 public class Sessions {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

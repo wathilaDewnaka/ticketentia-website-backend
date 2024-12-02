@@ -6,11 +6,13 @@ import com.tickentia.backend.entities.TicketPools;
 import com.tickentia.backend.respositary.TicketPoolsRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
 public class TicketPool {
-    private Vector<Ticket> tickets;
+    private List<Ticket> tickets;
     private int maxCapacity;
     private boolean isActive;
     private long sessionId;

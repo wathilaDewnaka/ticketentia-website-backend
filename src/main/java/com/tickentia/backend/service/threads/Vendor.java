@@ -33,7 +33,7 @@ public class Vendor implements Runnable {
                 Ticket ticket = new Ticket(ticketsReleased, sessions.getEventName(), sessions.getTicketPrice());
                 ticketPool.addTicket(ticket);
 
-                Thread.sleep(sessions.getTicketReleaseRate());
+                Thread.sleep(sessions.getTicketReleaseRate() * 1000L);
                 ticketsReleased++;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

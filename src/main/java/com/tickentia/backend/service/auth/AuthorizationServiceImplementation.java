@@ -31,13 +31,13 @@ public class AuthorizationServiceImplementation implements AuthorizationService 
 
     @Override
     public Vendors registerVendor(SignUpRequest signUpRequest) {
-        Vendors vendor = new Vendors(signUpRequest.getFirstName() + " " + signUpRequest.getLastName(), signUpRequest.getEmail().toLowerCase(), passwordEncoder.encode(signUpRequest.getPassword()), signUpRequest.getCountry(), signUpRequest.getAddress(), signUpRequest.getTelephone(), signUpRequest.getBrOrNICNumber());
+        Vendors vendor = new Vendors(capitalize(signUpRequest.getFirstName() + " " + signUpRequest.getLastName()), signUpRequest.getEmail().toLowerCase().strip(), passwordEncoder.encode(signUpRequest.getPassword().strip()), capitalize(signUpRequest.getCountry()), capitalize(signUpRequest.getAddress()), signUpRequest.getTelephone(), signUpRequest.getBrOrNICNumber());
         return vendorRepository.save(vendor);
     }
 
     @Override
     public Customers registerCustomer(SignUpRequest signUpRequest) {
-        Customers customer = new Customers(signUpRequest.getFirstName() + " " + signUpRequest.getLastName(), signUpRequest.getEmail().toLowerCase(), passwordEncoder.encode(signUpRequest.getPassword()), signUpRequest.getTelephone(), signUpRequest.getAddress(), signUpRequest.getCountry(), signUpRequest.getBrOrNICNumber(), UserType.CUSTOMER.name(), 0);
+        Customers customer = new Customers(capitalize(signUpRequest.getFirstName() + " " + signUpRequest.getLastName()), signUpRequest.getEmail().toLowerCase().strip(), passwordEncoder.encode(signUpRequest.getPassword().strip()), signUpRequest.getTelephone(), capitalize(signUpRequest.getAddress()), capitalize(signUpRequest.getCountry()), signUpRequest.getBrOrNICNumber(), UserType.CUSTOMER.name(), 0);
         return customerRepository.save(customer);
     }
 
@@ -57,5 +57,23 @@ public class AuthorizationServiceImplementation implements AuthorizationService 
             return true;
         }
         return false;
+    }
+
+    private String capitalize(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        String[] words = input.split(" "); // Split the input by spaces
+        String result = ""; // Initialize an empty string to hold the final result
+
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                // Capitalize the first letter and add the rest of the word in lowercase
+                result += Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase() + " ";
+            }
+        }
+
+        return result.trim(); // Remove any extra trailing space
     }
 }

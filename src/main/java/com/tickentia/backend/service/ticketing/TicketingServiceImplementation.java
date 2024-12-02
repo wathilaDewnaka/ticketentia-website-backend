@@ -13,6 +13,7 @@ import com.tickentia.backend.service.threads.Customer;
 import com.tickentia.backend.service.threads.Vendor;
 import com.tickentia.backend.service.ticketpool.TicketPool;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
