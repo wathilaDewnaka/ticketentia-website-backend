@@ -71,7 +71,7 @@ public class Customer implements Runnable{
             if (customer.getTotalPurchases() >= 50000 && UserType.CUSTOMER.name().equals(customer.getCustomerType())) {
                 customer.setCustomerType(UserType.VIP_CUSTOMER.name());
             }
-            seatNumbers = seatNumbers.substring(0, seatNumbers.length() - 1);
+            seatNumbers = seatNumbers.substring(0, seatNumbers.length() - 2);
 
             // Calculate discount and update customer purchases
             double discount = (customer.getTotalPurchases() >= 50000) ? session.getVipDiscount() : 0;

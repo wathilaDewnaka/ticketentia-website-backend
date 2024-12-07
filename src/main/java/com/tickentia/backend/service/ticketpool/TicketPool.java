@@ -6,7 +6,6 @@ import com.tickentia.backend.entities.TicketPools;
 import com.tickentia.backend.respositary.TicketPoolsRepository;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
@@ -14,10 +13,11 @@ import java.util.Vector;
 public class TicketPool {
     private List<Ticket> tickets;
     private int maxCapacity;
-    private boolean isActive;
     private long sessionId;
     private SimpMessagingTemplate simpMessagingTemplate;
     private TicketPoolsRepository ticketPoolsRepository;
+
+    private volatile boolean isActive;
 
     public TicketPool(long sessionId, int maxCapacity, TicketPoolsRepository ticketPoolsRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.maxCapacity = maxCapacity;
@@ -72,7 +72,7 @@ public class TicketPool {
         }
 
         tickets.add(ticket);
-        System.out.println("Ticket added by " + Thread.currentThread().getName() + ". Total tickets: " + tickets.size());
+        System.out.println("Ticket added by " + Thread.currentThread().getName() + " for event id " + sessionId + " Total tickets: " + tickets.size());
         notifyAll();
     }
 
@@ -101,7 +101,7 @@ public class TicketPool {
 
         Ticket ticket = tickets.removeFirst();
         notifyAll();
-        System.out.println("Ticket removed by " + Thread.currentThread().getName() + ". Total tickets: " + tickets.size());
+        System.out.println("Ticket removed by " + Thread.currentThread().getName() + " event id is "+ sessionId +". Total tickets: " + tickets.size());
         return ticket;
 
     }

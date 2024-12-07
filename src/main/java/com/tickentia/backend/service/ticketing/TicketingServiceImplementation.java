@@ -1,6 +1,7 @@
 package com.tickentia.backend.service.ticketing;
 
 import com.tickentia.backend.dto.InitializerRequest;
+import com.tickentia.backend.dto.SuccessResponse;
 import com.tickentia.backend.dto.TicketPurchaseRequest;
 import com.tickentia.backend.entities.Customers;
 import com.tickentia.backend.entities.Sessions;
@@ -51,7 +52,7 @@ public class TicketingServiceImplementation implements TicketingService {
                 TicketPool ticketPoolObj = new TicketPool(currentSession.get(), ticketPool, ticketPoolsRepository, simpMessagingTemplate);
                 ticketPoolHashMap.put(currentSession.get().getSessionId(), ticketPoolObj);
 
-                Vendor vendor = new Vendor(ticketPoolObj, currentSession.get(), ticketPool.getReleaseTicketCount());
+                Runnable vendor = new Vendor(ticketPoolObj, currentSession.get(), ticketPool.getReleaseTicketCount());
                 Thread thread = new Thread(vendor, "Vendor ID - " + currentSession.get().getVendorId());
                 thread.start();
             }
@@ -79,7 +80,7 @@ public class TicketingServiceImplementation implements TicketingService {
             TicketPool ticketPool = new TicketPool(newSession.getSessionId(), initializerRequest.getMaxTicketCapacity(), ticketPoolsRepository, simpMessagingTemplate);
             ticketPoolHashMap.put(newSession.getSessionId(), ticketPool);
 
-            Vendor vendor = new Vendor(ticketPool, newSession);
+            Runnable vendor = new Vendor(ticketPool, newSession);
             Thread vendorThread = new Thread(vendor, "Vendor ID - " + currentVendor.getVendorId());
             vendorThread.start();
             return true;
@@ -90,7 +91,7 @@ public class TicketingServiceImplementation implements TicketingService {
     }
 
     @Override
-    public boolean purchaseTickets(TicketPurchaseRequest ticketPurchaseRequest) {
+    public SuccessResponse purchaseTickets(TicketPurchaseRequest ticketPurchaseRequest) {
         Optional<Sessions> sessions = sessionsRepository.findById(ticketPurchaseRequest.getSessionId());
         Optional<Customers> customers = customerRepository.findById(ticketPurchaseRequest.getCustomerId());
 
@@ -98,23 +99,28 @@ public class TicketingServiceImplementation implements TicketingService {
             Sessions session = sessions.get();
 
             if (EventType.VIP.name().equals(session.getEventType()) && !UserType.VIP_CUSTOMER.name().equals(customers.get().getCustomerType())) {
-                return false;
+                return null;
             }
 
             TicketPool ticketPool = ticketPoolHashMap.get(ticketPurchaseRequest.getSessionId());
 
-            Customer customer = new Customer(customerRepository, ticketHistoryRepository, session, ticketPool, ticketPurchaseRequest);
+            Runnable customer = new Customer(customerRepository, ticketHistoryRepository, session, ticketPool, ticketPurchaseRequest);
             Thread customerThread = new Thread(customer, "Customer ID - " + customers.get().getCustomerId());
+
+            SuccessResponse successResponse = new SuccessResponse(true, "Tickets purchased successfully !");
+            if (customers.get().getCustomerType().equals(UserType.VIP_CUSTOMER.name())){
+                successResponse.setUserRole(UserType.VIP_CUSTOMER.name());
+            }
 
             if (UserType.VIP_CUSTOMER.name().equals(customers.get().getCustomerType())){
                 customerThread.setPriority(Thread.MAX_PRIORITY);
             }
 
             customerThread.start();
-            return true;
+            return successResponse;
         }
 
-        return false;
+        return null;
     }
 
     @Override

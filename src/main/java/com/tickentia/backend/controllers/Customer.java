@@ -23,9 +23,8 @@ public class Customer {
 
     @PostMapping("/events/purchase-ticket")
     public ResponseEntity<?> purchaseTicket(@RequestBody TicketPurchaseRequest ticketPurchaseRequest){
-        boolean status = ticketingService.purchaseTickets(ticketPurchaseRequest);
-        if (status){
-            SuccessResponse successResponse = new SuccessResponse(true, "Tickets purchased successfully !");
+        SuccessResponse successResponse = ticketingService.purchaseTickets(ticketPurchaseRequest);
+        if (successResponse != null){
             return ResponseEntity.ok(successResponse);
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();

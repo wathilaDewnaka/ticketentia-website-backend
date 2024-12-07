@@ -46,7 +46,7 @@ public class Vendor {
     @GetMapping("/stop/{id}")
     public ResponseEntity<?> stopSession(@PathVariable long id) {
         boolean status = ticketingService.stopSession(id);
-        return ResponseEntity.ok().body("Session stopped successfully.");
+        return status ? ResponseEntity.ok().body(new SuccessResponse(true, "Session Stopped !")) : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
     @GetMapping("/all-sessions/{vendorId}")

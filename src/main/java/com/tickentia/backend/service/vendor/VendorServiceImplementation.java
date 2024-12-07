@@ -12,12 +12,10 @@ import java.util.*;
 @Service
 public class VendorServiceImplementation implements VendorService {
     private final SessionsRepository sessionsRepository;
-    private final VendorRepository vendorRepository;
     private final TicketPoolsRepository ticketPoolsRepository;
 
-    public VendorServiceImplementation(SessionsRepository sessionsRepository, VendorRepository vendorRepository, TicketPoolsRepository ticketPoolsRepository) {
+    public VendorServiceImplementation(SessionsRepository sessionsRepository, TicketPoolsRepository ticketPoolsRepository) {
         this.sessionsRepository = sessionsRepository;
-        this.vendorRepository = vendorRepository;
         this.ticketPoolsRepository = ticketPoolsRepository;
     }
 
