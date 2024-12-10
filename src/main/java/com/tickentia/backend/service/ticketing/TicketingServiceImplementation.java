@@ -49,7 +49,7 @@ public class TicketingServiceImplementation implements TicketingService {
         for (TicketPools ticketPool : ticketPools) {
             Optional<Sessions> currentSession = sessionsRepository.findById(ticketPool.getSessionId());
             if (currentSession.isPresent()) {
-                TicketPool ticketPoolObj = new TicketPool(currentSession.get(), ticketPool, ticketPoolsRepository, simpMessagingTemplate);
+                TicketPool ticketPoolObj = new TicketPool(currentSession.get(), ticketPool, ticketPoolsRepository, sessionsRepository, simpMessagingTemplate);
                 ticketPoolHashMap.put(currentSession.get().getSessionId(), ticketPoolObj);
 
                 Runnable vendor = new Vendor(ticketPoolObj, currentSession.get(), ticketPool.getReleaseTicketCount());
@@ -77,7 +77,7 @@ public class TicketingServiceImplementation implements TicketingService {
             ticketPoolsRepository.save(newTicketPool); // Saving the records in the table
 
             // Creating the shared ticket pool object
-            TicketPool ticketPool = new TicketPool(newSession.getSessionId(), initializerRequest.getMaxTicketCapacity(), ticketPoolsRepository, simpMessagingTemplate);
+            TicketPool ticketPool = new TicketPool(newSession.getSessionId(), initializerRequest.getMaxTicketCapacity(), ticketPoolsRepository, sessionsRepository, simpMessagingTemplate);
             ticketPoolHashMap.put(newSession.getSessionId(), ticketPool);
 
             Runnable vendor = new Vendor(ticketPool, newSession);
